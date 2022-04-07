@@ -1,0 +1,366 @@
+﻿<Window x:Class="Todolist.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:vie="clr-namespace:WpfApp.ViewModel"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="800" Width="1000"
+        WindowStyle="None"
+        AllowsTransparency="True"
+        ResizeMode="CanResizeWithGrip"
+        WindowStartupLocation="CenterScreen">
+    <Window.Resources>
+        <Style x:Key="WindowControlsButtonsStyle" TargetType="{x:Type Button}">
+            <Setter Property="BorderThickness" Value="1"/>
+            <Setter Property="HorizontalContentAlignment" Value="Center"/>
+            <Setter Property="VerticalContentAlignment" Value="Center"/>
+            <Setter Property="Padding" Value="1"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="{x:Type Button}">
+                        <Border x:Name="border" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
+                            <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="true">
+                                <Setter Property="BorderThickness" Value="1.5" TargetName="border"/>
+                                <Setter Property="BorderBrush" Value="Gray" TargetName="border"/>
+                                <Setter Property="Background" Value="#FF213C91" TargetName="border"/>
+                            </Trigger>
+                            <Trigger Property="IsPressed" Value="true">
+                                <Setter Property="Background" Value="#FF205AAB" TargetName="border"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
+
+    </Window.Resources>
+    <Window.DataContext>
+        <vie:MainViewModel/>
+    </Window.DataContext>
+    <Grid>
+        <Grid.Background>
+            <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                <GradientStop Color="White" Offset="0.5"/>
+                <GradientStop Color="#FFC8C8C8" Offset="1"/>
+            </LinearGradientBrush>
+        </Grid.Background>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="35"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid Name="Hat" Grid.Row="0" ShowGridLines="True" Background="#FF210E91" MouseLeftButtonDown="Grid_MouseLeftButtonDown">
+            <TextBlock Text="Simple to-do list"
+                   HorizontalAlignment="Left" VerticalAlignment="Center"
+                   Margin="10 0 0 0"
+                   FontSize="20" FontFamily="Calibri">
+                <TextBlock.Foreground>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <GradientStop Color="White"/>
+                        <GradientStop Color="#FFABABAB" Offset="1"/>
+                    </LinearGradientBrush>
+                </TextBlock.Foreground>
+                <TextBlock.Effect>
+                    <DropShadowEffect Color="#FF00CAFF" ShadowDepth="2.5" Direction="180"/>
+                </TextBlock.Effect>
+            </TextBlock>
+
+            <StackPanel Background="Transparent" Orientation="Horizontal" HorizontalAlignment="Right">
+                <Button Height="35" Width="40"
+                        Style="{DynamicResource WindowControlsButtonsStyle}"
+                        BorderBrush="Transparent"
+                        Content="_"
+                        Padding="0 0 0 6"
+                        FontSize="15"
+                        Foreground="White"
+                        Click="ButtonMinimize_Click"
+                        Background="Transparent"/>
+                <Button Height="35" Width="40"
+                        Style="{DynamicResource WindowControlsButtonsStyle}"
+                        Content="☐"
+                        BorderBrush="Transparent"
+                        FontSize="14"
+                        Foreground="White"
+                        Click="ButtonMaximized_Click"
+                        Background="Transparent"/>
+                <Button Style="{DynamicResource WindowControlsButtonsStyle}" Height="35" Width="40"
+                        BorderBrush="Transparent"
+                        Content="🗙"
+                        FontFamily="Calibri"
+                        FontSize="14"
+                        Foreground="Red"
+                        Click="ButtonClose_Click"
+                        Command="{x:Static vie:MainViewModel.SaveChanges}"
+                        Background="Transparent"/>
+            </StackPanel>
+        </Grid>
+        <ListView BorderThickness="0" ScrollViewer.HorizontalScrollBarVisibility="Disabled" ScrollViewer.VerticalScrollBarVisibility="Hidden" Width="500" HorizontalAlignment="Center" Grid.Row="1" Background="{x:Null}"
+                  ItemsSource="{Binding AllTasks}" SelectedItem="{Binding SelectedDay}">
+            <ListView.ItemContainerStyle>
+                <Style TargetType="{x:Type ListViewItem}">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="30"/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <Label     Grid.Row="0"
+                                       Content="{Binding DateToString}"
+                                       FontSize="16"
+                                       FontStyle='Normal'
+                                       HorizontalAlignment="Left"
+                                       VerticalAlignment="Top"
+                                       Margin="5 0 0 0" FontWeight="Bold" Background="{x:Null}" FontFamily="Calibri" Foreground="#FF210E7D"/>
+                                    <Border x:Name="Border"
+                                    Grid.Row="1"
+                                    BorderThickness="1.5"
+                                    CornerRadius="10"
+                                    BorderBrush="#FF210E7D">
+
+                                        <!--Grid-->
+
+                                        <Grid MinHeight="80" Width="Auto"
+                              Background="Transparent">
+                                            <Grid.RowDefinitions>
+                                                <RowDefinition Height="Auto"/>
+                                                <RowDefinition/>
+                                            </Grid.RowDefinitions>
+
+                                            <!--TaskList-->
+
+                                            <ListView BorderThickness="0" Grid.Row="0" Background="Transparent" x:Name="TaskList"
+                                            ItemsSource="{Binding Tasks}" SelectedItem="{Binding SelectedTask}" ScrollViewer.HorizontalScrollBarVisibility="Disabled">
+                                                <ListView.ItemContainerStyle>
+                                                    <Style TargetType="{x:Type ListViewItem}">
+                                                        <Setter Property="OverridesDefaultStyle" Value="False"/>
+                                                        <Setter Property="HorizontalAlignment" Value="Stretch"/>
+                                                        <Setter Property="VerticalAlignment" Value="Stretch"/>
+                                                        <Setter Property="Template">
+                                                            <Setter.Value>
+                                                                <ControlTemplate TargetType="{x:Type ListViewItem}">
+                                                                    <Grid x:Name="TaskGrid" Background="Transparent" Height="50" Margin="0 0 0 2">
+                                                                        <Grid.ColumnDefinitions>
+                                                                            <ColumnDefinition MaxWidth="50"/>
+                                                                            <ColumnDefinition/>
+                                                                        </Grid.ColumnDefinitions>
+                                                                        <CheckBox Grid.Row="0">
+                                                                            <CheckBox.Style>
+                                                                                <Style TargetType="{x:Type CheckBox}">
+                                                                                    <Setter Property="OverridesDefaultStyle" Value="False"/>
+                                                                                    <Setter Property="Template">
+                                                                                        <Setter.Value>
+                                                                                            <ControlTemplate TargetType="{x:Type CheckBox}">
+                                                                                                <Border x:Name="Border"
+                                                                                                            BorderThickness="1.5"
+                                                                                                            Height="25"
+                                                                                                            Width="25"
+                                                                                                            CornerRadius="30"
+                                                                                                            BorderBrush="#FF210E7D">
+                                                                                                    <Path x:Name="Mark" Visibility="Hidden" Stroke="DarkGreen" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                                                                            Height="12" Width="12" Stretch="Fill"
+                                                                                                            StrokeThickness="2"
+                                                                                                            StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                                                                                            Data="M 2 5 L 12 20 L 28 -5"/>
+                                                                                                </Border>
+                                                                                                <ControlTemplate.Triggers>
+                                                                                                    <Trigger Property="IsChecked" Value="True">
+                                                                                                        <Setter Property="Visibility" Value="Visible" TargetName="Mark"/>
+                                                                                                    </Trigger>
+                                                                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                                                                        <Setter Property="Cursor" Value="Hand"/>
+                                                                                                        <Setter Property="Background" Value="#FFC3B7FF" TargetName="Border"/>
+                                                                                                    </Trigger>
+                                                                                                    <Trigger Property="IsPressed" Value="True">
+                                                                                                        <Setter Property="Background" Value="#FF8777D6" TargetName="Border"/>
+                                                                                                    </Trigger>
+                                                                                                </ControlTemplate.Triggers>
+                                                                                            </ControlTemplate>
+                                                                                        </Setter.Value>
+                                                                                    </Setter>
+                                                                                </Style>
+                                                                            </CheckBox.Style>
+                                                                        </CheckBox>
+                                                                        <TextBlock Grid.Column="1" Grid.Row="0" Text="{Binding Name}" FontSize="15" FontFamily="Calibri" FontWeight="Bold" Foreground="#FF101099"
+                                                                       VerticalAlignment="Center" HorizontalAlignment="Left"/>
+                                                                        <Button Grid.Row="0" x:Name="DeleteTaskButton" Margin="0 0 10 0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                                                Height="30" Width="30" Background="Transparent" BorderBrush="Transparent"
+                                                                                Visibility="Hidden"
+                                                                                Command="{x:Static vie:MainViewModel.RemovedDayTask}">
+                                                                            <Button.Style>
+                                                                                <Style TargetType="{x:Type Button}">
+                                                                                    <Setter Property="BorderThickness" Value="1"/>
+                                                                                    <Setter Property="HorizontalContentAlignment" Value="Center"/>
+                                                                                    <Setter Property="VerticalContentAlignment" Value="Center"/>
+                                                                                    <Setter Property="Padding" Value="1"/>
+                                                                                    <Setter Property="Template">
+                                                                                        <Setter.Value>
+                                                                                            <ControlTemplate TargetType="{x:Type Button}">
+                                                                                                <Border x:Name="border" CornerRadius="5" Background="{TemplateBinding Background}" BorderBrush="{TemplateBinding BorderBrush}" BorderThickness="{TemplateBinding BorderThickness}" SnapsToDevicePixels="true">
+                                                                                                    <ContentPresenter x:Name="contentPresenter" Focusable="False" HorizontalAlignment="{TemplateBinding HorizontalContentAlignment}" Margin="{TemplateBinding Padding}" RecognizesAccessKey="True" SnapsToDevicePixels="{TemplateBinding SnapsToDevicePixels}" VerticalAlignment="{TemplateBinding VerticalContentAlignment}"/>
+                                                                                                </Border>
+                                                                                            </ControlTemplate>
+                                                                                        </Setter.Value>
+                                                                                    </Setter>
+
+                                                                                </Style>
+                                                                            </Button.Style>
+                                                                            <Path x:Name="DelMark" Stroke="Red" Data="M 0 0 L 0 20 M -10 10 L 10 10"
+                                                                              StrokeThickness="1.5" StrokeLineJoin="Round"
+                                                                              StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                                                              Stretch="Uniform"
+                                                                              HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                              Height="25" Width="20">
+                                                                                <Path.LayoutTransform>
+                                                                                    <RotateTransform Angle="45"/>
+                                                                                </Path.LayoutTransform>
+                                                                            </Path>
+
+                                                                        </Button>
+                                                                        <!--Separator-->
+                                                                        <Rectangle x:Name="Sep" Height="1.5" Width="398" Margin="0 0 0 1" Stroke="#FF210E7D" Fill="#FF210E7D" StrokeThickness="1.5"
+                                                                                   HorizontalAlignment="Center" VerticalAlignment="Bottom" Grid.Column="0" Grid.ColumnSpan="2"/>
+                                                                    </Grid>
+                                                                    <ControlTemplate.Triggers>
+                                                                        <Trigger Property="IsMouseOver" Value="True" SourceName="TaskGrid">
+                                                                            <Setter Property="Cursor" Value="Hand"/>
+                                                                            <Setter Property="Visibility" Value="Visible" TargetName="DeleteTaskButton"/>
+                                                                            <Setter Property="Stroke" Value="Gray" TargetName="DelMark"/>
+                                                                            <Setter Property="IsSelected" Value="True"/>
+                                                                            <Trigger.EnterActions>
+                                                                                <BeginStoryboard>
+                                                                                    <Storyboard>
+                                                                                        <DoubleAnimation To="494" Duration="0:0:0.3"
+                                                                                                         Storyboard.TargetName="Sep"
+                                                                                                         Storyboard.TargetProperty="Width"/>
+                                                                                    </Storyboard>
+                                                                                </BeginStoryboard>
+                                                                            </Trigger.EnterActions>
+                                                                            <Trigger.ExitActions>
+                                                                                <BeginStoryboard>
+                                                                                    <Storyboard>
+                                                                                        <DoubleAnimation To="398" Duration="0:0:0.3"
+                                                                                                         Storyboard.TargetName="Sep"
+                                                                                                         Storyboard.TargetProperty="Width"/>
+                                                                                    </Storyboard>
+                                                                                </BeginStoryboard>
+                                                                            </Trigger.ExitActions>
+                                                                        </Trigger>
+                                                                        <Trigger Property="IsMouseOver" Value="True" SourceName="DeleteTaskButton">
+                                                                            <Setter Property="Stroke" Value="Red" TargetName="DelMark"/>
+                                                                        </Trigger>
+                                                                        <MultiTrigger>
+                                                                            <MultiTrigger.Conditions>
+                                                                                <Condition Property="IsMouseOver" Value="True" SourceName="DeleteTaskButton"/>
+                                                                                <Condition Property="IsPressed" Value="True" SourceName="DeleteTaskButton"/>
+                                                                            </MultiTrigger.Conditions>
+                                                                            <Setter Property="Stroke" Value="Black" TargetName="DelMark"/>
+                                                                        </MultiTrigger>
+
+                                                                    </ControlTemplate.Triggers>
+                                                                </ControlTemplate>
+                                                            </Setter.Value>
+                                                        </Setter>
+                                                    </Style>
+                                                </ListView.ItemContainerStyle>
+                                            </ListView>
+
+                                            <!--AddTaskPanel-->
+
+                                            <Grid Height="50" Grid.Row="1">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="50"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="50"/>
+
+                                                </Grid.ColumnDefinitions>
+                                                <Path Stroke="#FF8E8E8E" Data="M 0 0 L 0 20 M -10 10 L 10 10"
+                                          StrokeThickness="1.5" StrokeLineJoin="Round"
+                                          StrokeStartLineCap="Round" StrokeEndLineCap="Round"
+                                          Stretch="Fill"
+                                          HorizontalAlignment="Center" VerticalAlignment="Center"
+                                          Height="20" Width="20"/>
+                                                <TextBox x:Name="TB" MinWidth="100" Text="{Binding Path=TaskNameToAdd, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}"
+                                                         Grid.Column="1" Margin="-2 0 0 0"
+                                             BorderThickness="0" Background="Transparent" Opacity="0.7"  MaxLength="60"
+                                      VerticalAlignment="Center" HorizontalAlignment="Left"
+                                                                                                                                   FontSize="15"
+                                                                           FontWeight="Bold"
+                                                                           FontFamily="Calibri"
+>
+                                                    <TextBox.InputBindings>
+                                                        <KeyBinding Command="{x:Static vie:MainViewModel.AddDayTask}" Key="Return"/>
+
+                                                    </TextBox.InputBindings>
+                                                </TextBox>
+                                                <TextBlock                 IsHitTestVisible="False"
+                                                                           Text="Новая задача"
+                                                                           Visibility="Hidden"
+                                                                           VerticalAlignment="Center"
+                                                                           HorizontalAlignment="Left"
+                                                                           Grid.Column="1"
+                                                                           FontSize="15"
+                                                                           FontWeight="Bold"
+                                                                           FontFamily="Calibri"
+                                                                           Foreground="#FF8E8E8E"
+                                                                           Name="NewTask"/>
+                                                <Button x:Name="AddTaskButton" Visibility="Visible" Focusable="False" Height="30" Width="30" Grid.Column="2"
+                                            HorizontalAlignment="Center" VerticalAlignment="Center" Command="{x:Static vie:MainViewModel.AddDayTask}" CommandParameter="{Binding index}">
+                                                    <Button.Style>
+                                                        <Style TargetType="{x:Type Button}">
+                                                            <Setter Property="Template">
+                                                                <Setter.Value>
+                                                                    <ControlTemplate TargetType="{x:Type Button}">
+                                                                        <Border x:Name="_Border"
+                                                                                BorderBrush="Orange" BorderThickness="2" CornerRadius="5"
+                                                                                Height="30" Width="30">
+                                                                            <Path x:Name="Mark" Visibility="Visible" Stroke="DarkGreen" VerticalAlignment="Center" HorizontalAlignment="Center"
+                                                                                    Height="15" Width="15" Stretch="Fill"
+                                                                                    StrokeThickness="2"
+                                                                                    StrokeStartLineCap="Round" StrokeEndLineCap="Round" StrokeLineJoin="Round"
+                                                                                    Data="M 2 5 L 12 20 L 28 -5"/>
+
+                                                                        </Border>
+                                                                        <ControlTemplate.Triggers>
+                                                                            <Trigger Property="IsMouseOver" Value="True">
+                                                                                <Setter Property="BorderThickness" Value="2.5" TargetName="_Border"/>
+                                                                                <Setter Property="Background" Value="#FFFFE3B1"  TargetName="_Border"/>
+                                                                                <Setter Property="Cursor" Value="Hand" />
+                                                                            </Trigger>
+                                                                            <Trigger Property="IsPressed" Value="True">
+                                                                                <Setter Property="Background" Value="Orange" TargetName="_Border"/>
+                                                                            </Trigger>
+                                                                        </ControlTemplate.Triggers>
+                                                                    </ControlTemplate>
+                                                                </Setter.Value>
+                                                            </Setter>
+                                                        </Style>
+                                                    </Button.Style>
+                                                </Button>
+
+                                            </Grid>
+                                        </Grid>
+
+                                    </Border>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Path=Text, ElementName=TB}" Value="">
+                                        <Setter Property="Visibility" Value="Visible" TargetName="NewTask"/>
+                                        <Setter Property="Visibility" Value="Hidden" TargetName="AddTaskButton"/>
+                                    </DataTrigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="IsSelected" Value="True"/>
+                                    </Trigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </ListView.ItemContainerStyle>
+        </ListView>
+    </Grid>
+</Window>
